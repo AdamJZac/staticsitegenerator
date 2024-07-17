@@ -1,7 +1,9 @@
 from textnode import *
 
 def main():
-    test_one = TextNode("test text, Some Capitals", "bold", "http://rand")
-    print(test_one)
+    node = TextNode("This is a text node", "bold", None)
+    node2 = TextNode("This is a text node", "bold", None)
+
+    print(node == node2)
 
 main()
