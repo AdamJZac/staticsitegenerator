@@ -1,16 +1,14 @@
-from parentnode import ParentNode
-from leafnode import LeafNode
+from parentnode import *
+from leafnode import *
+from textnode import *
 
 def main():
-    lnode1 = LeafNode("h3", "Third header")
-    lnode2 = LeafNode("p", "Some paragraph text.")
-    lnode3 = LeafNode("b", "Some bold text.")
-    lnode4 = LeafNode("h4", "Fourth header")
+    node = TextNode("Sample text", "bold")
 
-    node = ParentNode("h1", [lnode2, lnode3])
-    node2 = ParentNode("h2", [lnode1, lnode4, lnode2])
-    node3 = ParentNode("body", [node, node2])
+    node2 = text_node_to_html_node(node)
 
-    print(node3.to_html())
+    print(node2)
+
+    test_str = "LeafNode(b, Sample text, )"
 
 main()
