@@ -1,5 +1,6 @@
 from enum import Enum
 from leafnode import LeafNode
+import re
 
 class TextNode:
     types = ["text", "bold", "italic", "code", "link", "image"]
@@ -87,3 +88,56 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                     
     return output      
     
+def extract_markdown_images(text):
+    matches = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+    return matches
+
+def extract_markdown_links(text):
+    matches = re.findall(r"\[(.*?)\]\((.*?)\)", text)
+    return matches
+
+def split_nodes_image(old_nodes):
+    output = []
+    
+    for node in old_nodes:
+        images = extract_markdown_images(node.text)
+
+        if not images:
+            continue
+
+        remaining_str = node.text
+        for i in range(0, len(images)):
+            image_alt, image_link = images[i]
+
+            split_str = remaining_str.split(f"![{image_alt}]({image_link})", 1)
+            output.append(TextNode(split_str[0], "text"))
+            output.append(TextNode(image_alt, "image", image_link))
+            remaining_str = split_str[1]
+
+    if not output:
+        return old_nodes
+    else:
+        return output
+
+def split_nodes_links(old_nodes):
+    output = []
+    
+    for node in old_nodes:
+        links = extract_markdown_links(node.text)
+
+        if not links:
+            continue
+
+        remaining_str = node.text
+        for i in range(0, len(links)):
+            link_text, link_url = links[i]
+
+            split_str = remaining_str.split(f"[{link_text}]({link_url})", 1)
+            output.append(TextNode(split_str[0], "text"))
+            output.append(TextNode(link_text, "link", link_url))
+            remaining_str = split_str[1]
+
+    if not output:
+        return old_nodes
+    else:
+        return output
