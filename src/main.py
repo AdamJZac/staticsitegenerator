@@ -3,12 +3,9 @@ from leafnode import *
 from textnode import *
 
 def main():
-    node = TextNode("Sample text", "bold")
+    node = TextNode("This is text with a `code block` word", "text")
+    new_nodes = split_nodes_delimiter([node], "`", "code")
 
-    node2 = text_node_to_html_node(node)
-
-    print(node2)
-
-    test_str = "LeafNode(b, Sample text, )"
+    print(new_nodes)
 
 main()

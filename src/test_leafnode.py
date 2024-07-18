@@ -16,7 +16,12 @@ class TestLeafNode(unittest.TestCase):
         str = "Plain text"
         self.assertEqual(node.to_html(), str)
     def testerr(self):
-        node = LeafNode("p")
+        with self.assertRaises(ValueError) as context:
+            node = LeafNode("p")
+            print(node.to_html())
+        self.assertEqual(str(context.exception), "No value.")
+
+        
         self.assertRaises(ValueError)
 
     def testuneq(self):
