@@ -48,19 +48,19 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
     for node in old_nodes:
         if node.text_type != "text":
-            output.extend(node)
+            output.append(node)
         else:
             lst = node.text.split(delimiter)
             type_order = []
             new_nodes = []
 
-            if delimiter == node.text[0] or delimiter == node.text[0:1]:
+            if delimiter == node.text[0] or delimiter == node.text[0:2]:
                 type_order.append(text_type+"_start")
             else:
                 type_order.append("text")
 
             for i in range(1, len(node.text)-1):
-                if delimiter == node.text[i] or delimiter == node.text[i:i+1]:
+                if delimiter == node.text[i] or delimiter == node.text[i:i+2]:
                     if type_order[-1] != text_type+"_start":
                         type_order.append(text_type+"_start")
                     elif type_order[-1] == text_type+"_start":
@@ -81,8 +81,12 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             if "_start" in type_order[-1]:
                 raise ValueError("Invalid markdown syntax. No closing delimiter found.")
 
+            print(lst)
+            print(type_order)
             for j in range(0, len(lst)):
-                new_nodes.append(TextNode(lst[j], type_order[j]))
+                new_node = TextNode(lst[j], type_order[j])
+                print(new_node)
+                new_nodes.append(new_node)
             
             output.extend(new_nodes)
                     
@@ -103,6 +107,7 @@ def split_nodes_image(old_nodes):
         images = extract_markdown_images(node.text)
 
         if not images:
+            output.append(node)
             continue
 
         remaining_str = node.text
@@ -113,6 +118,8 @@ def split_nodes_image(old_nodes):
             output.append(TextNode(split_str[0], "text"))
             output.append(TextNode(image_alt, "image", image_link))
             remaining_str = split_str[1]
+        if remaining_str:
+            output.append(TextNode(remaining_str, "text"))
 
     if not output:
         return old_nodes
@@ -126,6 +133,7 @@ def split_nodes_links(old_nodes):
         links = extract_markdown_links(node.text)
 
         if not links:
+            output.append(node)
             continue
 
         remaining_str = node.text
@@ -136,8 +144,20 @@ def split_nodes_links(old_nodes):
             output.append(TextNode(split_str[0], "text"))
             output.append(TextNode(link_text, "link", link_url))
             remaining_str = split_str[1]
+        
+        if remaining_str:
+            output.append(TextNode(remaining_str, "text"))
 
     if not output:
         return old_nodes
     else:
         return output
+
+def text_to_textnodes(text):
+    nodes = [TextNode(text, "text")]
+    nodes = split_nodes_delimiter(nodes, "**", "bold")
+    nodes = split_nodes_delimiter(nodes, "*", "italic")
+    nodes = split_nodes_delimiter(nodes, "`", "code")
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_links(nodes)
+    return nodes
