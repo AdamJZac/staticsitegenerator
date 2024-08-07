@@ -81,11 +81,8 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             if "_start" in type_order[-1]:
                 raise ValueError("Invalid markdown syntax. No closing delimiter found.")
 
-            print(lst)
-            print(type_order)
             for j in range(0, len(lst)):
                 new_node = TextNode(lst[j], type_order[j])
-                print(new_node)
                 new_nodes.append(new_node)
             
             output.extend(new_nodes)
